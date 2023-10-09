@@ -57,8 +57,3 @@ func main() {
 		fmt.Println(err)
 	}
 }
-
-//func main() {
-//	a := rand.Intn(100)
-//	fmt.Println(a)
-//}
