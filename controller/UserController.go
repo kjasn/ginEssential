@@ -88,6 +88,21 @@ func Login(ctx *gin.Context) {
 	pwd := ctx.PostForm("pwd")
 
 	// 数据验证
+
+	if len(telephone) != 11 {
+		ctx.JSON(http.StatusUnprocessableEntity,
+			gin.H{"code": 422, "msg": "手机号必须为11位"})
+		return // 终止
+	}
+
+	if len(pwd) < 6 {
+		ctx.JSON(http.StatusUnprocessableEntity, gin.H{
+			"code": 422,
+			"msg":  "密码至少为6位",
+		})
+		return // 终止
+	}
+
 	var user model.User
 	common.DB.Where("telephone = ?", telephone).First(&user)
 	if user.ID == 0 {
@@ -95,13 +110,19 @@ func Login(ctx *gin.Context) {
 		return
 	}
 
+	// 判断密码是否正确
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Pwd), []byte(pwd)); err != nil {
 		ctx.JSON(http.StatusUnprocessableEntity, gin.H{"code": 422, "msg": "密码错误"})
 		return
 	}
 
 	// 生成token
-	token := "111"
+	token, err := common.ReleaseToken(user)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"code": 500, "msg": "系统错误"})
+		fmt.Println("生成token失败", err) // 记录日志
+		return
+	}
 
 	// 返回结果
 	ctx.JSON(http.StatusOK, gin.H{
