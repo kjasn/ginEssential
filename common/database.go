@@ -31,7 +31,6 @@ func InitDB() {
 	})
 
 	DB = db
-	//db, err := gorm.Open(drivername, dsn)
 
 	if err != nil {
 		panic("数据库连接失败: " + err.Error())
