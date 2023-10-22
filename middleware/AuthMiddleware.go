@@ -3,6 +3,7 @@ package middleware
 import (
 	"Kjasn/ginEssential/common"
 	"Kjasn/ginEssential/model"
+	"Kjasn/ginEssential/response"
 	"github.com/gin-gonic/gin"
 	"net/http"
 	"strings"
@@ -13,10 +14,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		// 获取 Authorization
 		tokenString := c.Request.Header.Get("Authorization")
 		if tokenString == "" || !strings.HasPrefix(tokenString, "Bearer ") {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": 401,
-				"msg":  "请求未携带token",
-			})
+			response.Response(c, http.StatusUnauthorized, 401, "请求未携带token", nil)
 			c.Abort()
 			return
 		}
@@ -27,10 +25,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		// 解析出 token
 		token, claims, err := common.ParseToken(tokenString)
 		if err != nil || !token.Valid {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": 401,
-				"msg":  "未授权",
-			})
+			response.Response(c, http.StatusUnauthorized, 401, "未授权", nil)
 			c.Abort()
 			return
 		}
@@ -41,10 +36,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		DB.First(&user, userId)
 		// 用户不存在
 		if user.ID == 0 {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"code": 401,
-				"msg":  "权限不足，用户不存在",
-			})
+			response.Response(c, http.StatusUnauthorized, 401, "权限不足，用户不存在", nil)
 			c.Abort()
 			return
 		}
