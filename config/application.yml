@@ -1,0 +1,9 @@
+service:
+  port: 80
+datasource:
+  username : "root"
+  password : "8520"
+  host : "localhost"
+  port : "3306"
+  database : "gin_essential"
+  charset : utf8mb4
