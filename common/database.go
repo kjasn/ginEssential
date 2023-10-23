@@ -3,6 +3,7 @@ package common
 import (
 	"Kjasn/ginEssential/model"
 	"fmt"
+	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -12,16 +13,17 @@ var DB *gorm.DB
 var mysqlLogger logger.Interface
 
 func InitDB() {
-	// 连接数据库
+	// 连接数据库		读取config文件获取配置信息
 	//drivername := "mysql"
-	username := "root"
-	password := "8520"
-	host := "localhost"
-	port := "3306"
-	database := "gin_essential"
+	username := viper.GetString("datasource.username")
+	password := viper.GetString("datasource.password")
+	host := viper.GetString("datasource.host")
+	port := viper.GetString("datasource.port")
+	database := viper.GetString("datasource.database")
+	charset := viper.GetString("datasource.charset")
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
-		username, password, host, port, database)
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local",
+		username, password, host, port, database, charset)
 
 	// dsn := "root:8520@tcp(127.0.0.1:3306)/ginEssential?charset=utf8mb4&parseTime=True&loc=L=True&loc=Local"
 
