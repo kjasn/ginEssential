@@ -3,6 +3,7 @@ package common
 import (
 	"Kjasn/ginEssential/model"
 	"fmt"
+
 	"github.com/spf13/viper"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -22,10 +23,11 @@ func InitDB() {
 	database := viper.GetString("datasource.database")
 	charset := viper.GetString("datasource.charset")
 
-	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local",
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True",
 		username, password, host, port, database, charset)
+	// fmt.Println(dsn)
 
-	// dsn := "root:8520@tcp(127.0.0.1:3306)/ginEssential?charset=utf8mb4&parseTime=True&loc=L=True&loc=Local"
+	//dsn := "root:8520@tcp(127.0.0.1:3306)/gin_essential?charset=utf8mb4&parseTime=True"
 
 	mysqlLogger = logger.Default.LogMode(logger.Info)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
@@ -39,6 +41,9 @@ func InitDB() {
 	}
 
 	fmt.Println("数据库连接成功")
-	db.AutoMigrate(&model.User{})
+	err = db.AutoMigrate(&model.User{})
+	if err != nil {
+		return
+	}
 
 }

@@ -25,9 +25,18 @@ func Register(ctx *gin.Context) {
 
 	// 获取数据
 	// 要求  昵称 手机号 密码
-	name := ctx.PostForm("name")
-	telephone := ctx.PostForm("telephone")
-	pwd := ctx.PostForm("pwd")
+	//name := ctx.PostForm("name")
+	//telephone := ctx.PostForm("telephone")
+	//pwd := ctx.PostForm("pwd")
+	var requestUser = model.User{}
+	err := ctx.Bind(&requestUser)
+	if err != nil {
+		response.Response(ctx, http.StatusUnprocessableEntity, 422, "数据验证错误", nil)
+		return
+	}
+	name := requestUser.Name
+	telephone := requestUser.Telephone
+	pwd := requestUser.Pwd
 
 	// 数据验证
 	if len(name) == 0 { // 为获取到昵称
