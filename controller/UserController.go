@@ -70,11 +70,12 @@ func Register(ctx *gin.Context) {
 		return // 终止
 	}
 
-	common.DB.Create(&model.User{
+	newUser := model.User{
 		Name:      name,
 		Telephone: telephone,
 		Pwd:       string(hashPwd), // 保存加密后的密码
-	})
+	}
+	common.DB.Create(&newUser)
 
 	if common.DB.Error != nil {
 		response.Response(ctx, http.StatusInternalServerError, 500, "注册失败", nil)
@@ -82,8 +83,14 @@ func Register(ctx *gin.Context) {
 		return // 终止
 	}
 
+	token, err := common.ReleaseToken(newUser)
+	if err != nil {
+		response.Response(ctx, http.StatusInternalServerError, 500, "系统错误", nil)
+		fmt.Println("生成token失败", err) // 记录日志
+		return
+	}
 	// 返回结果
-	response.Success(ctx, "注册成功", nil)
+	response.Success(ctx, "注册成功", gin.H{"token": token})
 }
 
 func Login(ctx *gin.Context) {
